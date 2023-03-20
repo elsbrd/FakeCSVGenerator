@@ -92,6 +92,15 @@ class SchemaDetailSerializer(serializers.ModelSerializer):
 
         return instance
 
+    def validate(self, data: dict) -> dict:
+        user = self.context['request'].user
+        name = data.get('name')
+
+        if Schema.objects.filter(name=name, user_created=user).exists():
+            raise serializers.ValidationError({'name': "Schema with this name already exists."})
+
+        return data
+
     def validate_columns(self, value: list) -> list:
         """
         Validate the columns data for the Schema.
