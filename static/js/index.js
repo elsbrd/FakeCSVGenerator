@@ -882,6 +882,7 @@ const DataSetsComponent = () => {
                                             style: 'width: 85px;margin-right: 10px',
                                             type: "number",
                                             min: 1,
+                                            value: numRows,
                                             oninput: (e) => {
                                                 numRows = e.target.value;
 
