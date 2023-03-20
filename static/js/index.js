@@ -106,7 +106,9 @@ function Login() {
     let username = '';
     let password = '';
 
-    function submit() {
+    let errorsContainer = {};
+
+    const submit= () => {
         m.request({
             method: 'POST',
             url: API_AUTH_LOGIN_ENDPOINT,
@@ -119,8 +121,19 @@ function Login() {
             localStorage.setItem('user', JSON.stringify(data.user));
             m.route.set('/schemas');
         }).catch(function (error) {
-            console.error(error);
+            errorsContainer = error.response;
         });
+    }
+
+    const getError = () => {
+        if ('non_field_errors' in errorsContainer) {
+            return errorsContainer['non_field_errors'][0]
+        }
+        return null;
+    }
+
+    const delError = () => {
+        delete errorsContainer['non_field_errors']
     }
 
     return {
@@ -147,18 +160,21 @@ function Login() {
                                         m('input.form-control[type=text][placeholder=Username]', {
                                             oninput: function (event) {
                                                 username = event.target.value;
+                                                delError()
                                             }
                                         }),
                                     ]),
-                                    m('.form-group.mb-3', [
+                                    m('.form-group.mb-2', [
                                         m('input.form-control[type=password][placeholder=Password]', {
                                             oninput: function (event) {
                                                 password = event.target.value;
+                                                delError()
                                             }
                                         }),
 
                                     ]),
-                                    m('button.btn.btn-primary', {
+                                    m('', getError('data_type') && m('.text-danger', {style: 'font-size: 15px'}, getError('data_type'))),
+                                    m('button.btn.btn-primary.mt-3', {
                                         style: 'float: right;'
                                     }, 'Login'),
                                 ]
